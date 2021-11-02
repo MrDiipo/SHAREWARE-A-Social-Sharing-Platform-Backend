@@ -4,16 +4,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Generated;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
 @Entity
+//@Table(uniqueConstraints = @UniqueConstraint(columnNames = "username")) //This constraint is important when multiple applications are accessing the same database
 public class User {
 
     @Id
@@ -23,6 +21,7 @@ public class User {
 
     @NotNull(message = "{Teil.constraints.username.NotNull.message}")
     @Size(min = 4, max = 255)
+    @UniqueUsername
     private String username;
 
     @NotNull

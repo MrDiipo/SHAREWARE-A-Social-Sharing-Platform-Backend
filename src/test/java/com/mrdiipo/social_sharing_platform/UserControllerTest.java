@@ -231,4 +231,13 @@ public class UserControllerTest {
         ResponseEntity<Object> response = postSignup(user, Object.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    public void postUser_whenAnotherUserHasSameUserName_receiveMessageDupicateUsername(){
+        userRepository.save(getUser());
+        User user = getUser();
+        ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
+        Map<String, String> validationErrors = response.getBody().getValidationError();
+        assertThat(validationErrors.get("username")).isEqualTo("This name is in use");
+    }
 }
