@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.mrdiipo.social_sharing_platform.shared.GenericResponse;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -190,7 +191,44 @@ public class UserControllerTest {
     }
 
     @Test
-    public
+    public void postUser_whenUserHasNullUserName_receiveMessageOfNullErrorForUserName(){
+        User user = getUser();
+        user.setUsername(null);
+        ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
+        Map<String, String> validationErrors = response.getBody().getValidationError();
+        assertThat(validationErrors.get("username")).isEqualTo("Username cannot be null");
+    }
 
+    @Test
+    public void postUser_whenUserHasNullPassword_receiveMessageOfNullErrorForUserName(){
+        User user = getUser();
+        user.setPassword(null);
+        ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
+        Map<String, String> validationErrors = response.getBody().getValidationError();
+        assertThat(validationErrors.get("password")).isEqualTo("Cannot be null");
+    }
+    @Test
+    public void postUser_whenUserHasInvalidLengthUserName_receiveGenericMessageOfSizeError(){
+        User user = getUser();
+        user.setUsername("abc");
+        ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
+        Map<String, String> validationErrors = response.getBody().getValidationError();
+        assertThat(validationErrors.get("username")).isEqualTo("It must have minimum 4 and maximum 255 characters");
+    }
+    @Test
+    public void postUser_whenUserHasInvalidPasswordPattern_receiveMessageOfPasswordPatternError(){
+        User user = getUser();
+        user.setPassword("alllowercase");
+        ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
+        Map<String, String> validationErrors = response.getBody().getValidationError();
+        assertThat(validationErrors.get("password")).isEqualTo("Password must have at least one uppercase, one lowercase letter, one number and one special character");
+    }
 
+    @Test
+    public void postUser_whenAnotherUser_HasSameUsername_receiveBadRequest(){
+        userRepository.save(getUser());
+        User user = getUser();
+        ResponseEntity<Object> response = postSignup(user, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }
