@@ -1,5 +1,6 @@
 package com.mrdiipo.social_sharing_platform;
 
+import com.mrdiipo.social_sharing_platform.error.ApiError;
 import com.mrdiipo.social_sharing_platform.user.User;
 import com.mrdiipo.social_sharing_platform.user.UserRepository;
 import org.junit.Before;
@@ -38,12 +39,12 @@ public class UserControllerTest {
         User user = new User();
         user.setUsername("test_user");
         user.setDisplayName("test_display");
-        user.setPassword("p4ssword");
+        user.setPassword("P4ss@word");
         return user;
     }
 
     public <T> ResponseEntity<T> postSignup(Object request, Class<T> response){
-        return   testRestTemplate.postForEntity(API_1_0_USERS, request, response);
+        return  testRestTemplate.postForEntity(API_1_0_USERS, request, response);
     }
 
     @Test
@@ -140,6 +141,21 @@ public class UserControllerTest {
         ResponseEntity<Object> response = postSignup(user, Object.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    public void postUser_whenUserIsInvalid_receiveApiError(){
+        User user = getUser();
+        ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
+        assertThat(response.getBody().getUrl()).isEqualTo(API_1_0_USERS);
+    }
+
+    @Test
+    public void postUser_whenUserIsInvalid_receiveApiErrorWithValidationErrors(){
+        User user = getUser();
+        ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
+        assertThat(response.getBody().getValidationError()).isEqualTo(API_1_0_USERS);
+    }
+
     @Test
     public void  postUser_whenUserHasPasswordWithHigherLengthThanRequired_receiveBadRequest(){
         User user = getUser();
@@ -172,4 +188,9 @@ public class UserControllerTest {
         ResponseEntity<Object> response = postSignup(user, Object.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    public
+
+
 }
