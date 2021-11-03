@@ -24,11 +24,11 @@ public class User {
     @UniqueUsername
     private String username;
 
-    @NotNull
+    @NotNull(message = "{Teil.constraints.username.NotNull.message.displayName}")
     @Size(min = 4, max = 255)
     private String displayName;
 
-    @NotNull
+    @NotNull(message = "{Teil.constraints.username.NotNull.message.password}")
     @Size(min = 8, max = 255)
     @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])[^\\s]{8,}$", message = "{Teil.constraints.password.Pattern.message}")
     private String password;
